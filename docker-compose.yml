@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  auth:
+    container_name: auth
+    image: "ermiry/auth-service:latest"
+    ports:
+      - 5000:5000
+  volumes:
+    - ${KEYS}:/home/keys
+
+  quotas:
+    container_name: quotas
+    image: "ermiry/quotas-service:latest"
+    ports:
+      - 5001:5001
+
+  tokens:
+    container_name: tokens
+    image: "ermiry/tokens-service:latest"
+    ports:
+      - 5002:5002
+  volumes:
+    - ${KEYS}:/home/keys
+
+  redis:
+    container_name: cache
+    image: "redis/redis-stack:latest"
+    ports:
+      - 6379:6379
+      - 8001:8001
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  default:
+    external:
+      name: ermiry
